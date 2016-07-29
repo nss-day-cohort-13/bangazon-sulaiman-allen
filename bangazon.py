@@ -1,9 +1,17 @@
 import pickle
+import random
+random.seed()
 
 
 class Bangazon():
 
     def __init__(self):
+        try:
+            self.users = self.deserialize()
+        except:
+            print("Loading of file Failed")
+            print()
+            self.users = dict()
         self.user_name = None
         self.screen_name = None
         self.user = None
@@ -39,21 +47,25 @@ class Bangazon():
             exit()
 
     def create_user(self):
-        # A user ID number
-        # Screen name
-        # Full name
-        self.user_name = input("Enter full name\n>")
-        self.screen_name = input("Enter screen name\n>")
+
+        full_name = input("Enter full name\n>")
+        screen_name = input("Enter screen name\n>")
         print()
-        print("User '{0}' created".format(self.screen_name))
+        print("User '{0}' created".format(screen_name))
         print()
-        # write user to file
+
+        self.users[screen_name] = ["%05d" % random.randint(0, 99999), screen_name, full_name]
+        self.serialize()
         self.menu()
 
     def select_user(self):
 
         # This menu chooses from a list of established users to login as.
+        count = 1
         print("Which user is chriping?")
+        for key in self.users:
+            print("{0}. {1}".format(count, key))
+            count += 1
         # show self.users here
         # 1. Tweedleedee
         # 2. BiffBoffin
@@ -62,7 +74,8 @@ class Bangazon():
 
     def view_chirps(self):
 
-        # Only the two users involved in a private chirp can see it in their Private Chirps section.
+        # Only the two users involved in a private chirp can see it in their Private
+        # Chirps section.
         print("<< Private Chirps >>")
         # 1. BiffBoffin: Hey, you up for ping...
         # 2. Lara_keet: Any idea what Jeff wa...
@@ -101,6 +114,7 @@ class Bangazon():
 
     def new_private_chirp(self):
         # Private
+        chirp = input("Enter chirp text\n> ")
 
         # Chirp at
         # 1. BiffBoffin
@@ -108,8 +122,17 @@ class Bangazon():
         # ...
         # 9. Cancel
         # >
+    def deserialize(self):
 
-        chirp = input("Enter chirp text\n> ")
+        with open('users', 'rb') as f:
+            deserialized = pickle.load(f)
+
+        return deserialized
+
+    def serialize(self):
+
+        with open('users', 'wb') as f:
+            pickle.dump(self.users, f)
 
 
 if __name__ == '__main__':
