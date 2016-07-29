@@ -9,12 +9,14 @@ class Bangazon():
         try:
             self.users = self.deserialize()
         except:
-            print("Loading of file Failed")
+            print("Loading of file failed, creating new one")
             print()
             self.users = dict()
         self.user_name = None
         self.screen_name = None
         self.user = None
+        self.public_messages = dict()
+        self.private_messages = dict()
 
     def menu(self):
 
@@ -47,6 +49,9 @@ class Bangazon():
             exit()
 
     def create_user(self):
+        '''
+            Menu for creating a new user
+        '''
 
         full_name = input("Enter full name\n>")
         screen_name = input("Enter screen name\n>")
@@ -55,22 +60,27 @@ class Bangazon():
         print()
 
         self.users[screen_name] = ["%05d" % random.randint(0, 99999), screen_name, full_name]
-        self.serialize()
+        self.serialize_users()
         self.menu()
 
     def select_user(self):
+        '''
+            This menu chooses from a list of established users to login as.
+        '''
 
-        # This menu chooses from a list of established users to login as.
-        count = 1
         print("Which user is chriping?")
-        for key in self.users:
-            print("{0}. {1}".format(count, key))
-            count += 1
-        # show self.users here
-        # 1. Tweedleedee
-        # 2. BiffBoffin
-        # ...
-        self.user = input("> ")
+
+        # make temporary tuple list to bind the key to value to be used by dictionary
+        tempTupList = []
+
+        for key in enumerate(self.users):
+            tempTupList.append(key[1])
+            print("{0}. {1}".format(key[0], key[1]))
+
+        selection = int(input("> "))
+        self.user = tempTupList[selection]
+        print("{0} selected.".format(self.user))
+        self.menu()
 
     def view_chirps(self):
 
@@ -102,6 +112,13 @@ class Bangazon():
 
     def new_public_chirp(self):
 
+        '''
+            Creates a new public chirp
+        '''
+        if ( not self.user):
+            print("Please select a user first")
+            self.menu()
+
         chirp = input("Enter chirp text\n> ")
 
         # Users can chirp publicly or they can start a private chirp with another user.
@@ -129,10 +146,18 @@ class Bangazon():
 
         return deserialized
 
-    def serialize(self):
+    def serialize_users(self):
 
         with open('users', 'wb') as f:
             pickle.dump(self.users, f)
+
+    def serialize_messages(self):
+
+        with open('public_messages', 'wb+') as f:
+            pickle.dump(self.public_messages, f)
+
+        with open('private_messages', 'wb+') as f:
+            pickle.dump(self.private_messages, f)
 
 
 if __name__ == '__main__':
