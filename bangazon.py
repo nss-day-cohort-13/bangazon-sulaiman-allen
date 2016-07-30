@@ -7,19 +7,41 @@ class Bangazon():
 
     def __init__(self):
         try:
-            self.users = self.deserialize()
+            self.users = self.deserialize_users()
         except:
             print("Loading of file failed, creating new one")
             print()
             self.users = dict()
+
+        try:
+            self.message_index = self.deserialize_message_index()
+        except:
+            print("Index = 0")
+            self.message_index = 0
+
+        try:
+            self.public_messages = self.deserialize_public_messages()
+        except:
+            self.public_messages = dict()
+
+        try:
+            self.private_messages = self.deserialize_private_messages()
+        except:
+            print("Loading of private messages file failed, creating new one")
+            self.private_messages = dict()
+
         self.user_name = None
         self.screen_name = None
         self.user = None
-        self.public_messages = dict()
-        self.private_messages = dict()
 
     def menu(self):
 
+        if(self.user):
+            print("Logged in as {0}".format(self.user))
+            print()
+        else:
+            print("Please sign in")
+            print()
         print("#########################################")
         print("##           Birdyboard~~~~~           ##")
         print("#########################################")
@@ -27,7 +49,8 @@ class Bangazon():
         print("4. Public Chirp\n5. Private Chirp\n6. Exit")
         print()
         choice = int(input("> "))
-        print()
+
+        # print(chr(27) + "[2J")
 
         if (choice == 1):  # New user account
             self.create_user()
@@ -79,7 +102,7 @@ class Bangazon():
 
         selection = int(input("> "))
         self.user = tempTupList[selection]
-        print("{0} selected.".format(self.user))
+        # print(chr(27) + "[2J")
         self.menu()
 
     def view_chirps(self):
@@ -87,14 +110,17 @@ class Bangazon():
         # Only the two users involved in a private chirp can see it in their Private
         # Chirps section.
         print("<< Private Chirps >>")
+        [print("{0}. {1}: {2}".format(value[0], value[1], value[2])) for (key, value) in self.private_messages.items() if value[1] == self.user or value[2] == self.user]
+        print()
+        print()
         # 1. BiffBoffin: Hey, you up for ping...
         # 2. Lara_keet: Any idea what Jeff wa...
         # 3. BiffBoffin: Hah, you got wrecked...
 
         print("<< Public Chirps >>")
-        # 4. Tweedleedee: Anybody know a good...
-        # 5. Fuzzy: Do NOT try the mega ultra...
-        # 6. Velton32: You guys have got to s...
+        # if self.public_messages not 
+        [print("{0}. {1}: {2}".format(value[0], value[1], value[2])) for (key, value) in self.public_messages.items()]
+
         print("0. Main Menu")
         print()
         choice = int(input("> "))
@@ -115,23 +141,67 @@ class Bangazon():
         '''
             Creates a new public chirp
         '''
-        if ( not self.user):
+        if (not self.user):
+            # print(chr(27) + "[2J")
             print("Please select a user first")
+            print()
             self.menu()
 
         chirp = input("Enter chirp text\n> ")
 
-        # Users can chirp publicly or they can start a private chirp with another user.
+        if (self.public_messages[self.user]):
+            self.public_messages[self.user] += {self.message_index, self.user, chirp}
 
-        # A chirp ID number
-        # Who authored the chirp
-        # Is this a public or private chirp
-        # Who the chirp is to (if applicable)
-        # The text content of the chirp
+        else:
+            self.public_messages[self.user] = [{self.message_index, self.user, chirp}]
+            # self.public_messages[self.user] = (self.message_index, self.user, chirp)
+
+        self.serialize_messages()
+        self.menu()
 
     def new_private_chirp(self):
-        # Private
+        '''
+            Creates a new private chirp
+        '''
+        if (not self.user):
+            # print(chr(27) + "[2J")
+            print("Please select a user first")
+            print()
+            self.menu()
+
+        print("Chirp at:")
+        print()
+
+        tempTupList = []
+
+        for key in enumerate(self.users):
+            tempTupList.append(key[1])
+            print("{0}. {1}".format(key[0], key[1]))
+
+        selection = int(input("> "))
+        recipient = tempTupList[selection]
+
         chirp = input("Enter chirp text\n> ")
+
+        # If the send user already exists as a key in the root dictionary
+        if (self.user in self.private_messages):
+
+            message = (self.message_index, self.user, recipient, chirp)
+            self.private_messages[self.user][recipient].append(message)
+
+        # If the user doesnt exit, create it. The user being chirped at is created
+        # as a new dictionary key for faster indexing and more logical layout.
+        else:
+            tempDict = dict()
+            messages = [(self.message_index, self.user, recipient, chirp)]
+            tempDict[recipient] = messages
+            self.private_messages[self.user] = tempDict
+
+        self.serialize_messages()
+        print(self.private_messages)
+        self.menu()
+
+        # Private
 
         # Chirp at
         # 1. BiffBoffin
@@ -139,11 +209,26 @@ class Bangazon():
         # ...
         # 9. Cancel
         # >
-    def deserialize(self):
+    def deserialize_users(self):
 
         with open('users', 'rb') as f:
             deserialized = pickle.load(f)
+        return deserialized
 
+    def deserialize_message_index(self):
+        with open('message_index', 'rb') as f:
+            deserialized = pickle.load(f)
+        return deserialized
+
+    def deserialize_public_messages(self):
+
+        with open('public_messages', 'rb+') as f:
+            deserialized = pickle.load(f)
+        return deserialized
+
+    def deserialize_private_messages(self):
+        with open('private_messages', 'rb+') as f:
+            deserialized = pickle.load(f)
         return deserialized
 
     def serialize_users(self):
@@ -152,6 +237,11 @@ class Bangazon():
             pickle.dump(self.users, f)
 
     def serialize_messages(self):
+
+        self.message_index += 1
+
+        with open('message_index', 'wb+') as f:
+            pickle.dump(self.message_index, f)
 
         with open('public_messages', 'wb+') as f:
             pickle.dump(self.public_messages, f)
