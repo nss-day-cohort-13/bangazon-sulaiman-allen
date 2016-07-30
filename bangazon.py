@@ -1,3 +1,4 @@
+#! /home/xalerons/anaconda3/bin/python
 import pickle
 import random
 random.seed()
@@ -17,7 +18,7 @@ class Bangazon():
             self.message_index = self.deserialize_message_index()
         except:
             print("Index = 0")
-            self.message_index = 0
+            self.message_index = 1
 
         try:
             self.public_messages = self.deserialize_public_messages()
@@ -91,6 +92,13 @@ class Bangazon():
             This menu chooses from a list of established users to login as.
         '''
 
+        # check to make sure a user exists
+        if(not any(self.users)):
+            print("No users found, please create a new user")
+            print()
+            print()
+            self.create_user()
+
         print("Which user is chriping?")
 
         # make temporary tuple list to bind the key to value to be used by dictionary
@@ -107,20 +115,23 @@ class Bangazon():
 
     def view_chirps(self):
 
-        # Only the two users involved in a private chirp can see it in their Private
-        # Chirps section.
-        print("<< Private Chirps >>")
-        [print("{0}. {1}: {2}".format(value[0], value[1], value[2])) for (key, value) in self.private_messages.items() if value[1] == self.user or value[2] == self.user]
-        print()
-        print()
-        # 1. BiffBoffin: Hey, you up for ping...
-        # 2. Lara_keet: Any idea what Jeff wa...
-        # 3. BiffBoffin: Hah, you got wrecked...
+        if (self.user):
+            print("<< Private Chirps >>")
+            for (key, value) in self.private_messages[self.user].items():
+                for entry in self.private_messages[self.user][key]:
+                    print("{0}. {1} - {2}".format(entry[0], entry[2], entry[3]))
+            print()
+            print()
+        else:
+            print("Log in to see private messages.")
+            print()
 
         print("<< Public Chirps >>")
-        # if self.public_messages not 
-        [print("{0}. {1}: {2}".format(value[0], value[1], value[2])) for (key, value) in self.public_messages.items()]
+        for (key, value) in self.public_messages.items():
+            for list_entry in value:
+                print("{0}. {1} - {2}".format(key, list_entry[0], list_entry[1]))
 
+        print()
         print("0. Main Menu")
         print()
         choice = int(input("> "))
@@ -149,12 +160,10 @@ class Bangazon():
 
         chirp = input("Enter chirp text\n> ")
 
-        if (self.public_messages[self.user]):
-            self.public_messages[self.user] += {self.message_index, self.user, chirp}
+        messages = [(self.user, chirp)]
+        self.public_messages[self.message_index] = messages
 
-        else:
-            self.public_messages[self.user] = [{self.message_index, self.user, chirp}]
-            # self.public_messages[self.user] = (self.message_index, self.user, chirp)
+        print("self.public_messages = {0}".format(self.public_messages))
 
         self.serialize_messages()
         self.menu()
@@ -201,14 +210,6 @@ class Bangazon():
         print(self.private_messages)
         self.menu()
 
-        # Private
-
-        # Chirp at
-        # 1. BiffBoffin
-        # 2. Lara_keet
-        # ...
-        # 9. Cancel
-        # >
     def deserialize_users(self):
 
         with open('users', 'rb') as f:
