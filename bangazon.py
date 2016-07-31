@@ -31,8 +31,6 @@ class Bangazon():
             print("Loading of private messages file failed, creating new one")
             self.private_messages = dict()
 
-        self.user_name = None
-        self.screen_name = None
         self.user = None
 
     def menu(self):
@@ -50,6 +48,7 @@ class Bangazon():
         print("4. Public Chirp\n5. Private Chirp\n6. Exit")
         print()
         choice = int(input("> "))
+        print()
 
         # print(chr(27) + "[2J")
 
@@ -115,11 +114,28 @@ class Bangazon():
 
     def view_chirps(self):
 
+        local_private_message_list = list()
+        public_index_dict = dict()
+        private_index_list = list()
+
         if (self.user):
+            # save entries to a list to have them printed by index_number later
+            private_index_list = list()
             print("<< Private Chirps >>")
-            for (key, value) in self.private_messages[self.user].items():
-                for entry in self.private_messages[self.user][key]:
-                    print("{0}. {1} - {2}".format(entry[0], entry[2], entry[3]))
+            # First key = sending user's username
+            for (first_key, entry) in self.private_messages.items():
+                # Second key = recipeint's username
+                for second_key in entry:
+                    # self.private_messages[first_key][second_key] is a list like this:
+                    # [(2, 'Glorbus', 'Zargon', 'Hey Zarg'), (5, 'Glorbus', 'Zargon', 'Im good, whats going on??')]
+                    for message_data in self.private_messages[first_key][second_key]:
+                        if(self.user == message_data[1] or self.user == message_data[2]):
+                            local_private_message_list.append(message_data)
+            # the results are sorted so that the index number is always in the right order
+            # therefore, the messages will be too
+            for entry in sorted(local_private_message_list):
+                print("{0}. {1} - {2}".format(entry[0], entry[1], entry[3]))
+                private_index_list.append((entry[0]))
             print()
             print()
         else:
@@ -129,12 +145,20 @@ class Bangazon():
         print("<< Public Chirps >>")
         for (key, value) in self.public_messages.items():
             for list_entry in value:
-                print("{0}. {1} - {2}".format(key, list_entry[0], list_entry[1]))
-
+                if(type(list_entry[0]) == int):  # Only entries that have a post # are shown
+                    print("{0}. {1} - {2}".format(list_entry[0], list_entry[1], list_entry[2]))
+                    public_index_dict[key] = [key, list_entry]
         print()
         print("0. Main Menu")
         print()
         choice = int(input("> "))
+        print()
+
+        if (choice in public_index_dict):
+            self.reply_to_public_post(choice)
+
+        elif(choice in private_index_list):
+            print("choice is private")
 
         # Selecting an individual chirp takes you to that chirp's comment thread.
 
@@ -145,7 +169,29 @@ class Bangazon():
         # 1. Reply
         # 2. Back
         # >
-        pass
+    def reply_to_public_post(self, index):
+
+        # print the message before adding to the post
+        for post in self.public_messages[index]:
+            if(type(post[0]) == int):  # This is the root post
+                print("{0}: {1}".format(post[1], post[2]))
+            else:
+                print("{0}: {1}".format(post[0], post[1]))
+        print()
+        print("1. Reply")
+        print("2. Back")
+        choice = int(input("> "))
+        if (choice == 1):
+            chirp = input("Enter chirp text\n> ")
+            self.public_messages[index].append((self.user, chirp))
+            with open('public_messages', 'wb+') as f:
+                pickle.dump(self.public_messages, f)
+            self.reply_to_public_post(index)
+        elif(choice == 2):
+            self.view_chirps()
+        else:
+            print("Please enter a valid choice.")
+            self.reply_to_public_post(index)
 
     def new_public_chirp(self):
 
@@ -160,7 +206,7 @@ class Bangazon():
 
         chirp = input("Enter chirp text\n> ")
 
-        messages = [(self.user, chirp)]
+        messages = [(self.message_index, self.user, chirp)]
         self.public_messages[self.message_index] = messages
 
         print("self.public_messages = {0}".format(self.public_messages))
