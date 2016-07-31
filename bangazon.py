@@ -10,14 +10,13 @@ class Bangazon():
         try:
             self.users = self.deserialize_users()
         except:
-            print("Loading of file failed, creating new one")
+            print("Loading of users file failed, creating new one")
             print()
             self.users = dict()
 
         try:
             self.message_index = self.deserialize_message_index()
         except:
-            print("Index = 0")
             self.message_index = 1
 
         try:
@@ -35,6 +34,7 @@ class Bangazon():
 
     def menu(self):
 
+        print("\n\n\n\n")
         if(self.user):
             print("Logged in as {0}".format(self.user))
             print()
@@ -71,6 +71,10 @@ class Bangazon():
             print("Goodbye")
             exit()
 
+        else:
+            print("Please enter a valid choice.")
+            self.menu()
+
     def create_user(self):
         '''
             Menu for creating a new user
@@ -88,14 +92,12 @@ class Bangazon():
 
     def select_user(self):
         '''
-            This menu chooses from a list of established users to login as.
+            This menu chooses from a list of established users to login.
         '''
-
         # check to make sure a user exists
         if(not any(self.users)):
             print("No users found, please create a new user")
-            print()
-            print()
+            print("\n\n")
             self.create_user()
 
         print("Which user is chriping?")
@@ -113,6 +115,9 @@ class Bangazon():
         self.menu()
 
     def view_chirps(self):
+        '''
+            This menu shows all available posts, public and private (to the logged in user)
+        '''
 
         local_private_message_list = list()
         public_index_dict = dict()
@@ -136,8 +141,7 @@ class Bangazon():
             for entry in sorted(local_private_message_list):
                 print("{0}. {1} - {2}".format(entry[0], entry[1], entry[3]))
                 private_index_list.append((entry[0]))
-            print()
-            print()
+            print("\n\n\n")
         else:
             print("Log in to see private messages.")
             print()
@@ -160,8 +164,13 @@ class Bangazon():
         elif(choice in private_index_list):
             print("choice is private")
 
-        # Selecting an individual chirp takes you to that chirp's comment thread.
+    def reply_to_public_post(self, index):
+        '''
+            Used for starting/adding to a message thread. These messages dont
+            get a unique id and are appended to a list containing the main post
+        '''
 
+        # Selecting an individual chirp takes you to that chirp's comment thread.
         # Tweedleedee: Anybody know a good Thai restaraunt in the area?
         # Fuzzy: Smiling Elephant is really good
         # BiffBoffin: The pad krapow is amazing!
@@ -169,7 +178,6 @@ class Bangazon():
         # 1. Reply
         # 2. Back
         # >
-    def reply_to_public_post(self, index):
 
         # print the message before adding to the post
         for post in self.public_messages[index]:
@@ -194,9 +202,11 @@ class Bangazon():
             self.reply_to_public_post(index)
 
     def new_public_chirp(self):
-
         '''
-            Creates a new public chirp
+            Creates a new public chirp. Public chirps are stored as a dictionary
+            with the key being the message ID. Replies to a public chirp are appended
+            to a list as the value of the dictionary so they always appear in the
+            correct order.
         '''
         if (not self.user):
             # print(chr(27) + "[2J")
@@ -216,7 +226,14 @@ class Bangazon():
 
     def new_private_chirp(self):
         '''
-            Creates a new private chirp
+            Creates a new private chirp. This dictionary is created seperately because it
+            uses a different layout than the public dictionary. Posts fall under the poster's
+            username as the dictionary key. The user being chirped at is created as a new
+            dictionary key under the poster's key for faster indexing and more logical
+            layout. The public and private chirps are also stored as 2 different files.
+            The 2 dictionaries/files also improve speed (don't have to read/write all
+            posts from one long file)/security as the private chirp file can be given
+            different permissions.
         '''
         if (not self.user):
             # print(chr(27) + "[2J")
@@ -244,8 +261,7 @@ class Bangazon():
             message = (self.message_index, self.user, recipient, chirp)
             self.private_messages[self.user][recipient].append(message)
 
-        # If the user doesnt exit, create it. The user being chirped at is created
-        # as a new dictionary key for faster indexing and more logical layout.
+        # If the user doesnt exit, create it.
         else:
             tempDict = dict()
             messages = [(self.message_index, self.user, recipient, chirp)]
