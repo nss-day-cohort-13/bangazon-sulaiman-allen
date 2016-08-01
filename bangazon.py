@@ -68,6 +68,7 @@ class Bangazon():
             self.new_private_chirp()
 
         elif (choice == 6):  # Exit
+            print()
             print("Goodbye")
             exit()
 
@@ -107,11 +108,25 @@ class Bangazon():
 
         for key in enumerate(self.users):
             tempTupList.append(key[1])
-            print("{0}. {1}".format(key[0], key[1]))
+            print("{0}. {1}".format((key[0] + 1), key[1]))
+        print("\n\n")
+        print("Enter '0' to return to main menu")
+        print()
 
         selection = int(input("> "))
-        self.user = tempTupList[selection]
-        # print(chr(27) + "[2J")
+
+        if (selection == 0):
+            self.menu()
+        else:
+            selection -= 1
+
+        try:
+            self.user = tempTupList[selection]
+        except IndexError:
+            print()
+            print("Please select a user from the list")
+            print()
+            self.select_user()
         self.menu()
 
     def view_chirps(self):
@@ -158,11 +173,17 @@ class Bangazon():
         choice = int(input("> "))
         print()
 
-        if (choice in public_index_dict):
+        if (choice == 0):
+            self.menu()
+        elif (choice in public_index_dict):
             self.reply_to_public_post(choice)
 
         elif(choice in private_index_list):
-            print("choice is private")
+            new_private_chirp()
+
+        else:
+            print("Please select an option from the list")
+            self.view_chirps()
 
     def reply_to_public_post(self, index):
         '''
@@ -170,16 +191,6 @@ class Bangazon():
             get a unique id and are appended to a list containing the main post
         '''
 
-        # Selecting an individual chirp takes you to that chirp's comment thread.
-        # Tweedleedee: Anybody know a good Thai restaraunt in the area?
-        # Fuzzy: Smiling Elephant is really good
-        # BiffBoffin: The pad krapow is amazing!
-        # ...
-        # 1. Reply
-        # 2. Back
-        # >
-
-        # print the message before adding to the post
         for post in self.public_messages[index]:
             if(type(post[0]) == int):  # This is the root post
                 print("{0}: {1}".format(post[1], post[2]))
@@ -198,7 +209,9 @@ class Bangazon():
         elif(choice == 2):
             self.view_chirps()
         else:
+            print()
             print("Please enter a valid choice.")
+            print()
             self.reply_to_public_post(index)
 
     def new_public_chirp(self):
@@ -218,8 +231,6 @@ class Bangazon():
 
         messages = [(self.message_index, self.user, chirp)]
         self.public_messages[self.message_index] = messages
-
-        print("self.public_messages = {0}".format(self.public_messages))
 
         self.serialize_messages()
         self.menu()
@@ -248,58 +259,92 @@ class Bangazon():
 
         for key in enumerate(self.users):
             tempTupList.append(key[1])
-            print("{0}. {1}".format(key[0], key[1]))
+            print("{0}. {1}".format(key[0] + 1, key[1]))
+
+        print("\n\n")
+        print("0. Main Menu")
 
         selection = int(input("> "))
-        recipient = tempTupList[selection]
 
-        chirp = input("Enter chirp text\n> ")
+        if (selection == 0):
+            self.menu()
 
-        # If the send user already exists as a key in the root dictionary
-        if (self.user in self.private_messages):
+        selection -= 1
 
-            message = (self.message_index, self.user, recipient, chirp)
-            self.private_messages[self.user][recipient].append(message)
+        try:
+            recipient = tempTupList[selection]
 
-        # If the user doesnt exit, create it.
-        else:
-            tempDict = dict()
-            messages = [(self.message_index, self.user, recipient, chirp)]
-            tempDict[recipient] = messages
-            self.private_messages[self.user] = tempDict
+            chirp = input("Enter chirp text\n> ")
 
-        self.serialize_messages()
-        print(self.private_messages)
-        self.menu()
+            # If the send user already exists as a key in the root dictionary
+            if (self.user in self.private_messages):
+
+                message = (self.message_index, self.user, recipient, chirp)
+                self.private_messages[self.user][recipient].append(message)
+
+            # If the user doesnt exit, create it.
+            else:
+                tempDict = dict()
+                messages = [(self.message_index, self.user, recipient, chirp)]
+                tempDict[recipient] = messages
+                self.private_messages[self.user] = tempDict
+
+            self.serialize_messages()
+            print(self.private_messages)
+            self.menu()
+
+        except IndexError:
+            print()
+            print("Please enter a valid choice.")
+            print()
+            self.new_private_chirp()
 
     def deserialize_users(self):
+        '''
+            Load users from disk
+        '''
 
         with open('users', 'rb') as f:
             deserialized = pickle.load(f)
         return deserialized
 
     def deserialize_message_index(self):
+        '''
+            Load message index from disk
+        '''
         with open('message_index', 'rb') as f:
             deserialized = pickle.load(f)
         return deserialized
 
     def deserialize_public_messages(self):
+        '''
+            Load public messages from disk
+        '''
 
         with open('public_messages', 'rb+') as f:
             deserialized = pickle.load(f)
         return deserialized
 
     def deserialize_private_messages(self):
+        '''
+            Load private messages from disk
+        '''
         with open('private_messages', 'rb+') as f:
             deserialized = pickle.load(f)
         return deserialized
 
     def serialize_users(self):
+        '''
+            Save self.users to disk.
+        '''
 
         with open('users', 'wb') as f:
             pickle.dump(self.users, f)
 
     def serialize_messages(self):
+        '''
+            Save all other messages to disk
+        '''
 
         self.message_index += 1
 
