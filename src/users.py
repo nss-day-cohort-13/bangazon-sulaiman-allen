@@ -1,5 +1,5 @@
-import sys
-import birdyboard
+# import sys
+# import birdyboard
 # sys.path.append("..")
 # from birdyboard import *
 # sys.path.append('./data')
@@ -9,13 +9,14 @@ class User():
 
     def __init__(self):
         self.user = None
-        self.bird = birdyboard.Birdyboard()
+        # self.bird = birdyboard.Birdyboard()
         # try:
         #     self.users = self.deserialize_users()
         # except:
         #     print("Loading of users file failed, creating new one")
         #     print()
         #     self.users = dict()
+        pass
 
     def load_self_dot_user(self):
 

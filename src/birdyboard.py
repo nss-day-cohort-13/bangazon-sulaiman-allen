@@ -1,8 +1,3 @@
-import sys
-# sys.path.append("./src")
-from users import *
-# sys.path.append("./data")
-
 
 class Birdyboard():
 
@@ -12,7 +7,8 @@ class Birdyboard():
         self.messageObject = message_object
         # self.users = self.userObject.load_self_dot_user()
         # self.user = userObject.
-        pass
+
+
         # try:
         #     self.users = self.deserialize_users()
         # except:
@@ -24,8 +20,8 @@ class Birdyboard():
     def display_menu(self):
 
         print("\n\n\n\n")
-        if(self.user):
-            print("Logged in as {0}".format(self.user))
+        if(self.userObject):
+            print("Logged in as {0}".format(self.userObject.user))
             print()
         else:
             print("Please sign in")

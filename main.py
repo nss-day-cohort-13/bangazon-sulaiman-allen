@@ -2,13 +2,17 @@ import sys
 sys.path.append("./src")
 from birdyboard import *
 from users import *
+# import message
+from message import *
 
 
-class main():
-    # self.bird = Birdyboard()
-    # user
+class Main():
+    def main(self):
+        self.user_instance = User()
+        self.message_instance = Message()
+        self.bird_instance = Birdyboard(self.user_instance, self.message_instance)
+        self.bird_instance.display_menu()
 
-    Birdyboard().display_menu()
 
 if __name__ == '__main__':
-    main()
+    Main().main()
