@@ -32,49 +32,49 @@ class Bangazon():
 
         self.user = None
 
-    def menu(self):
+    # def menu(self):
 
-        print("\n\n\n\n")
-        if(self.user):
-            print("Logged in as {0}".format(self.user))
-            print()
-        else:
-            print("Please sign in")
-            print()
-        print("#########################################")
-        print("##           Birdyboard~~~~~           ##")
-        print("#########################################")
-        print("1. New User Account\n2. Select User\n3. View Chirps")
-        print("4. Public Chirp\n5. Private Chirp\n6. Exit")
-        print()
-        choice = int(input("> "))
-        print()
+    #     print("\n\n\n\n")
+    #     if(self.user):
+    #         print("Logged in as {0}".format(self.user))
+    #         print()
+    #     else:
+    #         print("Please sign in")
+    #         print()
+    #     print("#########################################")
+    #     print("##           Birdyboard~~~~~           ##")
+    #     print("#########################################")
+    #     print("1. New User Account\n2. Select User\n3. View Chirps")
+    #     print("4. Public Chirp\n5. Private Chirp\n6. Exit")
+    #     print()
+    #     choice = int(input("> "))
+    #     print()
 
-        # print(chr(27) + "[2J")
+    #     # print(chr(27) + "[2J")
 
-        if (choice == 1):  # New user account
-            self.create_user()
+    #     if (choice == 1):  # New user account
+    #         self.create_user()
 
-        elif (choice == 2):  # Select user
-            self.select_user()
+    #     elif (choice == 2):  # Select user
+    #         self.select_user()
 
-        elif (choice == 3):  # View Chirps
-            self.view_chirps()
+    #     elif (choice == 3):  # View Chirps
+    #         self.view_chirps()
 
-        elif (choice == 4):  # Public Chirp
-            self.new_public_chirp()
+    #     elif (choice == 4):  # Public Chirp
+    #         self.new_public_chirp()
 
-        elif (choice == 5):  # Private Chirp
-            self.new_private_chirp()
+    #     elif (choice == 5):  # Private Chirp
+    #         self.new_private_chirp()
 
-        elif (choice == 6):  # Exit
-            print()
-            print("Goodbye")
-            exit()
+    #     elif (choice == 6):  # Exit
+    #         print()
+    #         print("Goodbye")
+    #         exit()
 
-        else:
-            print("Please enter a valid choice.")
-            self.menu()
+    #     else:
+    #         print("Please enter a valid choice.")
+    #         self.menu()
 
     def create_user(self):
         '''

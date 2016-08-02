@@ -6,9 +6,11 @@ from users import *
 
 class Birdyboard():
 
-    def __init__(self):
-        self.userObject = User()
-        self.users = self.userObject.load_self_dot_user()
+    def __init__(self, user_object, message_object):
+
+        self.userObject = user_object
+        self.messageObject = message_object
+        # self.users = self.userObject.load_self_dot_user()
         # self.user = userObject.
         pass
         # try:

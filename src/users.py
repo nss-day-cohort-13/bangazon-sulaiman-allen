@@ -1,6 +1,7 @@
 import sys
-sys.path.append("..")
-from birdyboard import *
+import birdyboard
+# sys.path.append("..")
+# from birdyboard import *
 # sys.path.append('./data')
 
 
@@ -8,7 +9,7 @@ class User():
 
     def __init__(self):
         self.user = None
-        self.bird = Birdyboard()
+        self.bird = birdyboard.Birdyboard()
         # try:
         #     self.users = self.deserialize_users()
         # except:
