@@ -1,5 +1,5 @@
 import unittest
-from bangazon import *
+from main import *
 
 
 class bangTester(unittest.TestCase):
