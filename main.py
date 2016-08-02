@@ -11,7 +11,9 @@ class Main():
         self.user_instance = User()
         self.message_instance = Message()
         self.bird_instance = Birdyboard(self.user_instance, self.message_instance)
-        self.bird_instance.display_menu()
+
+        while(True):
+            self.bird_instance.display_menu()
 
 
 if __name__ == '__main__':

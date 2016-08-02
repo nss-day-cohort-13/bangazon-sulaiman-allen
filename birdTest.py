@@ -4,6 +4,7 @@ sys.path.append("./src")
 from birdyboard import *
 from users import *
 from message import *
+import os
 
 
 class birdTester(unittest.TestCase):
@@ -17,14 +18,22 @@ class birdTester(unittest.TestCase):
     def test_birdyboard_class_is_of_type_birdyboard(self):
         self.assertIsInstance(self.bird_instance, Birdyboard)
 
+    def test_user_class_is_of_type_user(self):
+        self.assertIsInstance(self.user_instance, User)
+
+    def test_message_class_is_of_type_message(self):
+        self.assertIsInstance(self.message_instance, Message)
+
     def test_birdyboard_menu_selection_only_takes_numbers_1_through_6(self):
         self.assertEqual(True, self.bird_instance.menu_selection_input_test(3))
 
     def test_birdyboard_menu_selection_throws_value_error_if_outside_range(self):
         self.assertRaises(ValueError, self.bird_instance.menu_selection_input_test(9))
 
-    def test_for_user_file_that_doesnt_exist_throws_error(self):
-        self.assertRaises(FileNotFoundError, User.deserialize_users())
+    def test_user_class_deserialize_users_returns_not_none_if_file_is_not_empty(self):
+        self.assertIsNotNone(self.user_instance.deserialize_users())
+        # os.path.isfile(fpath) and os.path.getsize(fpath) > 0
+
 
 
 

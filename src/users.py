@@ -1,33 +1,21 @@
-# import sys
-# import birdyboard
-# sys.path.append("..")
-# from birdyboard import *
-# sys.path.append('./data')
+import pickle
+import random
+random.seed()
 
 
 class User():
 
     def __init__(self):
-        self.user = None
-        # self.bird = birdyboard.Birdyboard()
-        # try:
-        #     self.users = self.deserialize_users()
-        # except:
-        #     print("Loading of users file failed, creating new one")
-        #     print()
-        #     self.users = dict()
-        pass
-
-    def load_self_dot_user(self):
-
         try:
-            return self.deserialize_users()
-        except FileNotFoundError:
-            # print("Loading of users file failed, creating new one")
-            # print()
-            return dict()
+            self.users = self.deserialize_users()
+        except:
+            print("Loading of users file failed, creating new one")
+            print("")
+            self.users = dict()
 
-    def create_user(self):
+        self.user = None
+
+    def prompt_create_user(self):
         '''
             Menu for creating a new user
         '''
@@ -38,10 +26,18 @@ class User():
         print("User '{0}' created".format(screen_name))
         print()
 
-        self.users[screen_name] = ["%05d" % random.randint(0, 99999), screen_name, full_name]
+        self.create_user(["%05d" % random.randint(0, 99999), screen_name, full_name])
+
+    def create_user(self, user_list_object):
+        '''
+            Creates new user and pushes user to database
+        '''
+        # self.users[screen_name] = ["%05d" % random.randint(0, 99999), screen_name, full_name]
+
+        self.users[user_list_object[1]] = user_list_object
+
         self.serialize_users()
-        self.bird.menu()
-        # self.menu()
+        return
 
     def select_user(self):
         '''
@@ -68,7 +64,7 @@ class User():
         selection = int(input("> "))
 
         if (selection == 0):
-            self.menu()
+            return
         else:
             selection -= 1
 
@@ -79,14 +75,14 @@ class User():
             print("Please select a user from the list")
             print()
             self.select_user()
-        self.menu()
+        return
 
     def serialize_users(self):
         '''
             Save self.users to disk.
         '''
 
-        with open('users', 'wb') as f:
+        with open('data/user_data', 'wb') as f:
             pickle.dump(self.users, f)
 
     def deserialize_users(self):
@@ -94,10 +90,6 @@ class User():
             Load users from disk
         '''
 
-        with open('users', 'rb') as f:
+        with open('data/user_data', 'rb') as f:
             deserialized = pickle.load(f)
         return deserialized
-
-    def file_creation_of_empty_users_test(self):
-        # print("!!!!!!!!!!!!!!!!!!!!!!")
-        self.users = self.deserialize_users()
