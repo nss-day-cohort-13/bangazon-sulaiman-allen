@@ -34,6 +34,20 @@ class birdTester(unittest.TestCase):
         self.assertIsNotNone(self.user_instance.deserialize_users())
         # os.path.isfile(fpath) and os.path.getsize(fpath) > 0
 
+    def test_user_creation(self):
+        username = "Zorlarg"
+        self.user_instance.create_user([username, "Test_User"])
+        userlist = User.return_users()
+        self.assertEqual(userlist[username][0], username)
+
+    def test_public_chirp_creation(self):
+        user = self.user_instance.set_user("Zorlarg")
+        message_index = self.message_instance.message_index
+        chirp = "Hey guys dont mind me, this is just a test message"
+        self.message_instance.new_public_chirp_post(chirp, message_index=message_index, user=user)
+        messagelist = self.message_instance.deserialize_public_messages()
+        self.assertEqual(messagelist[message_index][0][2], chirp)
+
 
 
 

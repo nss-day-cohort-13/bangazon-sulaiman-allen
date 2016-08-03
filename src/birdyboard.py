@@ -7,10 +7,14 @@ class Birdyboard():
         self.messageObject = message_object
 
     def display_menu(self):
+        '''
+            Main menu
+        '''
 
         print("\n\n\n\n")
         if(self.userObject.user is not None):
-            print("Logged in as {0}".format(self.userObject.user))
+            # print("Logged in as {0}".format(self.userObject.user))
+            print("Logged in as {0}".format(self.messageObject.user))
             print()
         else:
             print("Please sign in")
@@ -40,7 +44,8 @@ class Birdyboard():
                     self.userObject.prompt_create_user()
 
                 elif (choice == 2):  # Select user
-                    self.userObject.select_user()
+                    user = self.userObject.select_user()
+                    self.messageObject.set_user_for_message_object(user)
 
                 elif (choice == 3):  # View Chirps
                     self.messageObject.view_chirps()

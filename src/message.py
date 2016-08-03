@@ -1,5 +1,29 @@
+import pickle
+
 
 class Message():
+
+    def __init__(self):
+        try:
+            self.message_index = self.deserialize_message_index()
+        except:
+            self.message_index = 1
+
+        try:
+            self.public_messages = self.deserialize_public_messages()
+        except:
+            self.public_messages = dict()
+
+        try:
+            self.private_messages = self.deserialize_private_messages()
+        except:
+            print("Loading of private messages file failed, creating new one")
+            self.private_messages = dict()
+
+        self.user = None
+
+    def set_user_for_message_object(self, user):
+        self.user = user
 
     def view_chirps(self):
         '''
@@ -34,6 +58,8 @@ class Message():
             print()
 
         print("<< Public Chirps >>")
+        # print("########################################################")
+        # print("self.public_messages = {0}".format(self.public_messages))
         for (key, value) in self.public_messages.items():
             for list_entry in value:
                 if(type(list_entry[0]) == int):  # Only entries that have a post # are shown
@@ -42,11 +68,12 @@ class Message():
         print()
         print("0. Main Menu")
         print()
+        # print(self.deserialize_public_messages())
         choice = int(input("> "))
         print()
 
         if (choice == 0):
-            self.menu()
+            return
         elif (choice in public_index_dict):
             self.reply_to_public_post(choice)
 
@@ -94,18 +121,25 @@ class Message():
             correct order.
         '''
         if (not self.user):
-            # print(chr(27) + "[2J")
-            print("Please select a user first")
-            print()
-            self.menu()
+            return
 
         chirp = input("Enter chirp text\n> ")
+        self.new_public_chirp_post(chirp)
 
-        messages = [(self.message_index, self.user, chirp)]
+    def new_public_chirp_post(self, chirp, **kwargs):
+
+        if(kwargs is False):
+            message_index = kwargs['message_index']
+            user = kwargs['user']
+
+        else:
+            message_index = self.message_index
+            user = self.user
+
+        messages = [(message_index, user, chirp)]
         self.public_messages[self.message_index] = messages
-
         self.serialize_messages()
-        self.menu()
+        return
 
     def new_private_chirp(self):
         '''
@@ -175,7 +209,7 @@ class Message():
         '''
             Load message index from disk
         '''
-        with open('message_index', 'rb') as f:
+        with open('./data/message_index', 'rb') as f:
             deserialized = pickle.load(f)
         return deserialized
 
@@ -184,15 +218,16 @@ class Message():
             Load public messages from disk
         '''
 
-        with open('public_messages', 'rb+') as f:
+        with open('./data/public_messages', 'rb+') as f:
             deserialized = pickle.load(f)
+            print(deserialized)
         return deserialized
 
     def deserialize_private_messages(self):
         '''
             Load private messages from disk
         '''
-        with open('private_messages', 'rb+') as f:
+        with open('./data/private_messages', 'rb+') as f:
             deserialized = pickle.load(f)
         return deserialized
 
@@ -203,11 +238,11 @@ class Message():
 
         self.message_index += 1
 
-        with open('message_index', 'wb+') as f:
+        with open('./data/message_index', 'wb+') as f:
             pickle.dump(self.message_index, f)
 
-        with open('public_messages', 'wb+') as f:
+        with open('./data/public_messages', 'wb+') as f:
             pickle.dump(self.public_messages, f)
 
-        with open('private_messages', 'wb+') as f:
+        with open('./data/private_messages', 'wb+') as f:
             pickle.dump(self.private_messages, f)

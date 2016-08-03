@@ -15,27 +15,32 @@ class User():
 
         self.user = None
 
+    @staticmethod
+    def return_users():
+        '''
+            Method for returning the list of users that exist in the system
+        '''
+        with open('data/user_data', 'rb') as f:
+            deserialized = pickle.load(f)
+            # print(deserialized)
+        return deserialized
+
     def prompt_create_user(self):
         '''
             Menu for creating a new user
         '''
-
         full_name = input("Enter full name\n>")
         screen_name = input("Enter screen name\n>")
-        print()
-        print("User '{0}' created".format(screen_name))
-        print()
-
-        self.create_user(["%05d" % random.randint(0, 99999), screen_name, full_name])
+        self.create_user([screen_name, full_name])
 
     def create_user(self, user_list_object):
         '''
             Creates new user and pushes user to database
         '''
-        # self.users[screen_name] = ["%05d" % random.randint(0, 99999), screen_name, full_name]
+        # Generate Unique ID
+        user_list_object.append("%05d" % random.randint(0, 99999))
 
-        self.users[user_list_object[1]] = user_list_object
-
+        self.users[user_list_object[0]] = user_list_object
         self.serialize_users()
         return
 
@@ -70,6 +75,7 @@ class User():
 
         try:
             self.user = tempTupList[selection]
+            return self.user
         except IndexError:
             print()
             print("Please select a user from the list")
@@ -77,11 +83,20 @@ class User():
             self.select_user()
         return
 
+    def set_user(self, username):
+        '''
+            Sets the currently logged in user via the username input. Accepts String
+        '''
+        if (username in self.users):
+            self.user = username
+            return username
+        else:
+            return False
+
     def serialize_users(self):
         '''
             Save self.users to disk.
         '''
-
         with open('data/user_data', 'wb') as f:
             pickle.dump(self.users, f)
 
@@ -89,7 +104,6 @@ class User():
         '''
             Load users from disk
         '''
-
         with open('data/user_data', 'rb') as f:
             deserialized = pickle.load(f)
         return deserialized
