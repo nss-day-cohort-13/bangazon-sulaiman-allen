@@ -54,6 +54,7 @@ class Birdyboard():
                     self.messageObject.new_public_chirp()
 
                 elif (choice == 5):  # Private Chirp
+                    self.messageObject.load_user_list(self.userObject.users)
                     self.messageObject.new_private_chirp()
 
                 elif (choice == 6):  # Exit

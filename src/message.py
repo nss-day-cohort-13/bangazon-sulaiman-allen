@@ -21,9 +21,17 @@ class Message():
             self.private_messages = dict()
 
         self.user = None
+        self.users = dict()
 
     def set_user_for_message_object(self, user):
+        '''
+            Sets the currently logged in user for the message object. Takes a string for user
+        '''
         self.user = user
+        return user
+
+    def load_user_list(self, user_dict):
+        self.users = user_dict
 
     def view_chirps(self):
         '''
@@ -127,8 +135,11 @@ class Message():
         self.new_public_chirp_post(chirp)
 
     def new_public_chirp_post(self, chirp, **kwargs):
-
-        if(kwargs is False):
+        '''
+            Method for posting a chirp to the dictionary. Accepts a string as input for chirp
+            and optionally 'message_index' (int) and user (string) as kwargs.
+        '''
+        if(bool(kwargs)):
             message_index = kwargs['message_index']
             user = kwargs['user']
 
@@ -153,10 +164,7 @@ class Message():
             different permissions.
         '''
         if (not self.user):
-            # print(chr(27) + "[2J")
-            print("Please select a user first")
-            print()
-            self.menu()
+            return
 
         print("Chirp at:")
         print()
@@ -173,7 +181,7 @@ class Message():
         selection = int(input("> "))
 
         if (selection == 0):
-            self.menu()
+            return
 
         selection -= 1
 
@@ -184,9 +192,14 @@ class Message():
 
             # If the send user already exists as a key in the root dictionary
             if (self.user in self.private_messages):
-
-                message = (self.message_index, self.user, recipient, chirp)
-                self.private_messages[self.user][recipient].append(message)
+                print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+                print("self.private messages = {0}".format(self.private_messages))
+                if(recipient in self.private_messages):
+                    messages = (self.message_index, self.user, recipient, chirp)
+                    self.private_messages[self.user][recipient].append(messages)
+                else:
+                    messages = (self.message_index, self.user, recipient, chirp)
+                    self.private_messages[self.user][recipient].append(messages)
 
             # If the user doesnt exit, create it.
             else:
@@ -197,7 +210,7 @@ class Message():
 
             self.serialize_messages()
             print(self.private_messages)
-            self.menu()
+            return
 
         except IndexError:
             print()

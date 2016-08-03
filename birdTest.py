@@ -41,18 +41,18 @@ class birdTester(unittest.TestCase):
         self.assertEqual(userlist[username][0], username)
 
     def test_public_chirp_creation(self):
+        # set_user_for_message_object
         user = self.user_instance.set_user("Zorlarg")
+        print("self.user_instance.user = {0}".format(self.user_instance.user))
+        print("user = {0}".format(user))
         message_index = self.message_instance.message_index
         chirp = "Hey guys dont mind me, this is just a test message"
         self.message_instance.new_public_chirp_post(chirp, message_index=message_index, user=user)
         messagelist = self.message_instance.deserialize_public_messages()
         self.assertEqual(messagelist[message_index][0][2], chirp)
 
-
-
-
-
-
+    def test_private_chirp_creation(self):
+        pass
 
 
 if __name__ == '__main__':
