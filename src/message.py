@@ -22,6 +22,7 @@ class Message():
 
         self.user = None
         self.users = dict()
+        # self.users = load_user_list()
 
     def set_user_for_message_object(self, user):
         '''
@@ -81,7 +82,7 @@ class Message():
             self.reply_to_public_post(choice)
 
         elif(choice in private_index_list):
-            new_private_chirp()
+            self.new_private_chirp_menu()
 
         else:
             print("Please select an option from the list")
@@ -104,10 +105,7 @@ class Message():
         choice = int(input("> "))
         if (choice == 1):
             chirp = input("Enter chirp text\n> ")
-            self.public_messages[index].append((self.user, chirp))
-            with open('public_messages', 'wb+') as f:
-                pickle.dump(self.public_messages, f)
-            self.reply_to_public_post(index)
+            self.post_reply_to_public_chirp(index, chirp)
         elif(choice == 2):
             self.view_chirps()
         else:
@@ -115,6 +113,17 @@ class Message():
             print("Please enter a valid choice.")
             print()
             self.reply_to_public_post(index)
+
+    def post_reply_to_public_chirp(self, index, chirp):
+        '''
+            Posts the reply to a public post to the dictionary. Takes index (int)
+            and chirp (string) as arguments.
+        '''
+        self.public_messages[index].append((self.user, chirp))
+        with open('./data/public_messages', 'wb+') as f:
+            pickle.dump(self.public_messages, f)
+        # self.reply_to_public_post(index)
+        return
 
     def new_public_chirp(self):
         '''
@@ -163,7 +172,6 @@ class Message():
 
         print("Chirp at:")
         print()
-
         tempTupList = []
 
         for key in enumerate(self.users):

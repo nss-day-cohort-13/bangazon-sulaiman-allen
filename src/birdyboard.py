@@ -51,6 +51,7 @@ class Birdyboard():
                     self.messageObject.set_user_for_message_object(user)
 
                 elif (choice == 3):  # View Chirps
+                    self.messageObject.load_user_list(self.userObject.users)
                     self.messageObject.view_chirps()
 
                 elif (choice == 4):  # Public Chirp

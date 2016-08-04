@@ -1,10 +1,10 @@
 import unittest
 from main import *
-sys.path.append("./src")
 from birdyboard import *
 from users import *
 from message import *
 import os
+sys.path.append("./src")
 
 
 class birdTester(unittest.TestCase):
@@ -47,6 +47,14 @@ class birdTester(unittest.TestCase):
         messagelist = self.message_instance.deserialize_public_messages()
         self.assertEqual(messagelist[message_index][0][2], chirp)
 
+    def test_reply_to_messages(self):
+        user = self.message_instance.set_user_for_message_object("Tractor Ryan")
+        chirp = "Far out man"
+        message_index = self.message_instance.message_index - 1
+        self.message_instance.post_reply_to_public_chirp(message_index, chirp)
+        public_messages_dict = self.message_instance.public_messages
+        self.assertEqual(public_messages_dict[message_index][1][1], chirp)
+
     def test_private_chirp_creation(self):
         chirp = "Hey this is just a test to see if private chirp creation is working"
         recipient = "Zorlarg"
@@ -55,6 +63,14 @@ class birdTester(unittest.TestCase):
         self.message_instance.post_private_chirp(chirp, recipient, user, message_index)
         private_messages_dict = self.message_instance.private_messages
         self.assertEqual(private_messages_dict[user][recipient][0][3], chirp)
+
+    def test_set_user_returns_proper_user(self):
+        self.user_instance.set_user("Slermo")
+        self.assertEqual(self.user_instance.user, "Slermo")
+
+    def test_set_user_for_message_object_method(self):
+        self.message_instance.set_user_for_message_object("Zorlarg")
+        self.assertEqual(self.message_instance.user, "Zorlarg")
 
 
 if __name__ == '__main__':
