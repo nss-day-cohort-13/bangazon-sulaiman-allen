@@ -32,7 +32,6 @@ class birdTester(unittest.TestCase):
 
     def test_user_class_deserialize_users_returns_not_none_if_file_is_not_empty(self):
         self.assertIsNotNone(self.user_instance.deserialize_users())
-        # os.path.isfile(fpath) and os.path.getsize(fpath) > 0
 
     def test_user_creation(self):
         username = "Zorlarg"
@@ -41,10 +40,7 @@ class birdTester(unittest.TestCase):
         self.assertEqual(userlist[username][0], username)
 
     def test_public_chirp_creation(self):
-        # set_user_for_message_object
         user = self.user_instance.set_user("Zorlarg")
-        print("self.user_instance.user = {0}".format(self.user_instance.user))
-        print("user = {0}".format(user))
         message_index = self.message_instance.message_index
         chirp = "Hey guys dont mind me, this is just a test message"
         self.message_instance.new_public_chirp_post(chirp, message_index=message_index, user=user)
@@ -52,7 +48,13 @@ class birdTester(unittest.TestCase):
         self.assertEqual(messagelist[message_index][0][2], chirp)
 
     def test_private_chirp_creation(self):
-        pass
+        chirp = "Hey this is just a test to see if private chirp creation is working"
+        recipient = "Zorlarg"
+        user = self.user_instance.set_user("Slermo")
+        message_index = self.message_instance.message_index
+        self.message_instance.post_private_chirp(chirp, recipient, user, message_index)
+        private_messages_dict = self.message_instance.private_messages
+        self.assertEqual(private_messages_dict[user][recipient][0][3], chirp)
 
 
 if __name__ == '__main__':

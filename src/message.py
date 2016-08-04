@@ -46,13 +46,10 @@ class Message():
             # save entries to a list to have them printed by index_number later
             private_index_list = list()
             print("<< Private Chirps >>")
-            # First key = sending user's username
-            for (first_key, entry) in self.private_messages.items():
-                # Second key = recipeint's username
-                for second_key in entry:
-                    # self.private_messages[first_key][second_key] is a list like this:
-                    # [(2, 'Glorbus', 'Zargon', 'Hey Zarg'), (5, 'Glorbus', 'Zargon', 'Im good, whats going on??')]
-                    for message_data in self.private_messages[first_key][second_key]:
+
+            for (sender, entry) in self.private_messages.items():
+                for recipient in entry:
+                    for message_data in self.private_messages[sender][recipient]:
                         if(self.user == message_data[1] or self.user == message_data[2]):
                             local_private_message_list.append(message_data)
             # the results are sorted so that the index number is always in the right order
@@ -66,8 +63,6 @@ class Message():
             print()
 
         print("<< Public Chirps >>")
-        # print("########################################################")
-        # print("self.public_messages = {0}".format(self.public_messages))
         for (key, value) in self.public_messages.items():
             for list_entry in value:
                 if(type(list_entry[0]) == int):  # Only entries that have a post # are shown
@@ -76,7 +71,7 @@ class Message():
         print()
         print("0. Main Menu")
         print()
-        # print(self.deserialize_public_messages())
+
         choice = int(input("> "))
         print()
 
@@ -152,7 +147,7 @@ class Message():
         self.serialize_messages()
         return
 
-    def new_private_chirp(self):
+    def new_private_chirp_menu(self):
         '''
             Creates a new private chirp. This dictionary is created seperately because it
             uses a different layout than the public dictionary. Posts fall under the poster's
@@ -178,41 +173,50 @@ class Message():
         print("\n\n")
         print("0. Main Menu")
 
-        selection = int(input("> "))
+        selection = input("> ")
+        if (selection.isdigit() is False):
+            self.new_private_chirp_menu()
 
-        if (selection == 0):
+        if (int(selection) == 0):
             return
 
-        selection -= 1
+        selection = int(selection) - 1
+
+        recipient = tempTupList[selection]
+
+        chirp = input("Enter chirp text\n> ")
+
+        self.post_private_chirp(chirp, recipient, self.user, self.message_index)
+
+    def post_private_chirp(self, chirp, recipient, user, message_index):
+        '''
+            Posts the private chirp to dictionary. Takes as input: chirp (string), recipient (string),
+            user (string), and message_index(int)
+        '''
 
         try:
-            recipient = tempTupList[selection]
-
-            chirp = input("Enter chirp text\n> ")
-
             # If the send user already exists as a key in the root dictionary
-            if (self.user in self.private_messages):
-                print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-                print("self.private messages = {0}".format(self.private_messages))
+            if (user in self.private_messages):
+
                 if(recipient in self.private_messages):
-                    messages = (self.message_index, self.user, recipient, chirp)
-                    self.private_messages[self.user][recipient].append(messages)
+                    messages = (self.message_index, user, recipient, chirp)
+                    self.private_messages[user][recipient].append(messages)
                 else:
-                    messages = (self.message_index, self.user, recipient, chirp)
-                    self.private_messages[self.user][recipient].append(messages)
+                    messages = (self.message_index, user, recipient, chirp)
+                    self.private_messages[user][recipient].append(messages)
 
             # If the user doesnt exit, create it.
             else:
                 tempDict = dict()
-                messages = [(self.message_index, self.user, recipient, chirp)]
+                messages = [(self.message_index, user, recipient, chirp)]
                 tempDict[recipient] = messages
-                self.private_messages[self.user] = tempDict
+                self.private_messages[user] = tempDict
 
             self.serialize_messages()
-            print(self.private_messages)
             return
 
-        except IndexError:
+        # except IndexError:
+        except:
             print()
             print("Please enter a valid choice.")
             print()
@@ -233,7 +237,7 @@ class Message():
 
         with open('./data/public_messages', 'rb+') as f:
             deserialized = pickle.load(f)
-            print(deserialized)
+            # print(deserialized)
         return deserialized
 
     def deserialize_private_messages(self):

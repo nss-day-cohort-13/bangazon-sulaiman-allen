@@ -35,7 +35,8 @@ class User():
 
     def create_user(self, user_list_object):
         '''
-            Creates new user and pushes user to database
+            Creates new user and pushes user to database. The uuid for each user is also created inside this method.
+            Takes a list of [screen_name (string) and full_name (string)] as an arugment as "user_list_object"
         '''
         # Generate Unique ID
         user_list_object.append("%05d" % random.randint(0, 99999))
